@@ -76,35 +76,37 @@ public class LdapPersistor {
         ctx = new InitialDirContext(env);
     }
     
-    public void getByDn(String dn) throws NamingException {
-        NamingEnumeration<SearchResult> search = searchDn(dn);
+    public <T extends LdapObject> T getByDn(String dn, Class<T> clazz) throws NamingException {
+        NamingEnumeration<SearchResult> search = searchDn(dn, SearchControls.OBJECT_SCOPE);
 
-        while (search.hasMore()) {
-            SearchResult next = search.next();
-            Attributes attributes = next.getAttributes();
-            System.out.println(attributes);
-        }
+        T newInstance = extractAndInvoke(search, clazz, dn);
+
+        return newInstance;
     }
 
-    private NamingEnumeration<SearchResult> searchDn(String dn) throws NamingException {
+    private NamingEnumeration<SearchResult> searchDn(String dn, int searchScope) throws NamingException {
         SearchControls sc = new SearchControls();
-        sc.setSearchScope(SearchControls.SUBTREE_SCOPE);
+        sc.setSearchScope(searchScope);
         sc.setReturningAttributes(new String[]{"*"});
         NamingEnumeration<SearchResult> search = ctx.search(dn, "(objectclass=*)", sc);
         return search;
     }
     
     public <T extends LdapObject> T search(String dn, Class<T> clazz) throws NamingException, SecurityException {
-        NamingEnumeration<SearchResult> search = searchDn(dn);
+        NamingEnumeration<SearchResult> search = searchDn(dn, SearchControls.SUBTREE_SCOPE);
+        T newInstance = extractAndInvoke(search, clazz, dn);
+
+        return newInstance;
+    }
+
+    private <T extends LdapObject> T extractAndInvoke(NamingEnumeration<SearchResult> search, Class<T> clazz, String dn) throws NamingException, SecurityException {
         Collection<String> objectClass = new ArrayList<String>();
         HashMap<String, Object> extractedAttributes = extractAttributes(search, objectClass);
-        
-        LdapAttributeParser ldapAttributeParser = new LdapAttributeParser();
-        
-        T newInstance = ldapAttributeParser.createNewInstance(extractedAttributes, clazz);
+        LdapAttributeParser attributeParser = new LdapAttributeParser();
+
+        T newInstance = attributeParser.createNewInstance(extractedAttributes, clazz);
         newInstance.setDn(dn);
         newInstance.setObjectClass(objectClass);
-        
         return newInstance;
     }
 
@@ -117,19 +119,27 @@ public class LdapPersistor {
             while (all.hasMore()) {
                 Attribute attribute = all.next();
                 String id = attribute.getID();
+
+                Object value = null;
                 
                 if (id.equals("objectClass")) {
                     for (int i = 0; i < attribute.size(); i++) {
                         objectClass.add((String)attribute.get(i));
                     }
-                } else if (attribute.size() > 1) {
+                    continue;
+                }
+
+                if (attribute.size() > 1) {
                     Object[] attArray = new Object[attribute.size()];
                     for (int i = 0; i < attribute.size(); i++) {
-                        attArray[i] = (String) attribute.get(i);
+                        attArray[i] = attribute.get(i);
                     }
+                    value = attArray;
+                } else {
+                    value = attribute.get();
                 }
                 
-                attributeMap.put(id, attribute.get());
+                attributeMap.put(id, value);
             }
         }
         return attributeMap;
