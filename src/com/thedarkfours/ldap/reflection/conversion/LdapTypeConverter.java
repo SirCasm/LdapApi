@@ -55,9 +55,6 @@ public class LdapTypeConverter {
     
     public Object convert(Class<?> type, Object object) {
         for (MatchCastAndValidate validator : validators) {
-            System.out.println(object);
-            System.out.println(validator.matchesType(type) + " " + type.getName() + " " + validator.getClass().getName()
-            );
             if (validator.matchesType(type)) {
                 return validator.castAndValidate(object);
             }
