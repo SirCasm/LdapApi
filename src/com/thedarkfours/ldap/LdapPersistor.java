@@ -24,22 +24,17 @@
 
 package com.thedarkfours.ldap;
 
-import com.thedarkfours.ldap.annotation.LdapAttribute;
 import com.thedarkfours.ldap.reflection.LdapAttributeParser;
 import com.thedarkfours.ldap.schema.LdapObject;
-import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Hashtable;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javax.naming.Context;
 import javax.naming.NamingEnumeration;
 import javax.naming.NamingException;
 import javax.naming.directory.Attribute;
 import javax.naming.directory.Attributes;
-import javax.naming.directory.DirContext;
 import javax.naming.directory.InitialDirContext;
 import javax.naming.directory.SearchControls;
 import javax.naming.directory.SearchResult;
@@ -126,6 +121,11 @@ public class LdapPersistor {
                 if (id.equals("objectClass")) {
                     for (int i = 0; i < attribute.size(); i++) {
                         objectClass.add((String)attribute.get(i));
+                    }
+                } else if (attribute.size() > 1) {
+                    Object[] attArray = new Object[attribute.size()];
+                    for (int i = 0; i < attribute.size(); i++) {
+                        attArray[i] = (String) attribute.get(i);
                     }
                 }
                 
