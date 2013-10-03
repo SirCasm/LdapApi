@@ -24,15 +24,14 @@
 
 package com.thedarkfours.ldap.reflection.conversion;
 
-import com.thedarkfours.ldap.reflection.conversion.validator.IntegerMatchCastAndValidate;
+import com.thedarkfours.ldap.reflection.conversion.validator.BooleanMatchCastAndValidate;
 import com.thedarkfours.ldap.reflection.conversion.validator.CharacterMatchCastAndValidate;
-import com.thedarkfours.ldap.reflection.conversion.validator.StringMatchCastAndValidate;
+import com.thedarkfours.ldap.reflection.conversion.validator.DoubleMatchCastAndValidate;
+import com.thedarkfours.ldap.reflection.conversion.validator.FloatMatchCastAndValidate;
+import com.thedarkfours.ldap.reflection.conversion.validator.IntegerMatchCastAndValidate;
 import com.thedarkfours.ldap.reflection.conversion.validator.LongMatchCastAndValidate;
 import com.thedarkfours.ldap.reflection.conversion.validator.ShortMatchCastAndValidate;
-import com.thedarkfours.ldap.reflection.conversion.validator.FloatMatchCastAndValidate;
-import com.thedarkfours.ldap.reflection.conversion.validator.DoubleMatchCastAndValidate;
-import com.thedarkfours.ldap.exception.CastAndValidateException;
-import com.thedarkfours.ldap.reflection.conversion.validator.BooleanMatchCastAndValidate;
+import com.thedarkfours.ldap.reflection.conversion.validator.StringMatchCastAndValidate;
 import java.util.ArrayList;
 
 /**
@@ -44,7 +43,6 @@ public class LdapTypeConverter {
             new ArrayList<MatchCastAndValidate>();
 
     public LdapTypeConverter() {
-        validators.add(new StringMatchCastAndValidate());
         validators.add(new CharacterMatchCastAndValidate());
         validators.add(new BooleanMatchCastAndValidate());
         validators.add(new ShortMatchCastAndValidate());
@@ -52,14 +50,18 @@ public class LdapTypeConverter {
         validators.add(new LongMatchCastAndValidate());
         validators.add(new FloatMatchCastAndValidate());
         validators.add(new DoubleMatchCastAndValidate());
+        validators.add(new StringMatchCastAndValidate());
     }
     
     public Object convert(Class<?> type, Object object) {
         for (MatchCastAndValidate validator : validators) {
+            System.out.println(object);
+            System.out.println(validator.matchesType(type) + " " + type.getName() + " " + validator.getClass().getName()
+            );
             if (validator.matchesType(type)) {
                 return validator.castAndValidate(object);
             }
         }
-        throw new CastAndValidateException("No fitting validator found for type " + type.getName());
+        return null;        //throw new CastAndValidateException("No fitting validator found for type " + type.getName());
     }
 }

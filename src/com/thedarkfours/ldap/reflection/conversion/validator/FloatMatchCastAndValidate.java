@@ -36,7 +36,7 @@ public class FloatMatchCastAndValidate implements MatchCastAndValidate {
 
     @Override
     public boolean matchesType(Class<?> type) {
-        return Float.TYPE.isAssignableFrom(type);
+        return Float.TYPE.isAssignableFrom(type) || Float.class.isAssignableFrom(type);
     }
 
     @Override

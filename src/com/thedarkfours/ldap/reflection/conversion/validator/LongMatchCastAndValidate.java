@@ -36,7 +36,7 @@ public class LongMatchCastAndValidate implements MatchCastAndValidate {
 
     @Override
     public boolean matchesType(Class<?> type) {
-        return Long.TYPE.isAssignableFrom(type);
+        return Long.TYPE.isAssignableFrom(type) || Long.class.isAssignableFrom(type);
     }
 
     @Override
