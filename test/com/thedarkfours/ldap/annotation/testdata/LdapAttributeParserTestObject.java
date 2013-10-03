@@ -32,8 +32,6 @@ public class LdapAttributeParserTestObject implements LdapObject {
     Double doubleValue;
     @LdapAttribute
     Short shortValue;
-    @LdapAttribute
-    int intValue;
 
     public Long getLongValue() {
         return longValue;
@@ -117,13 +115,5 @@ public class LdapAttributeParserTestObject implements LdapObject {
     @Override
     public void setObjectClass(Collection<String> objectClass) {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
-
-    public int getIntValue() {
-        return intValue;
-    }
-
-    public void setIntValue(int intValue) {
-        this.intValue = intValue;
     }
 }
