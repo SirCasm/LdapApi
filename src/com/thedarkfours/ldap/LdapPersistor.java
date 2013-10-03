@@ -72,6 +72,7 @@ public class LdapPersistor {
         env.put(Context.SECURITY_AUTHENTICATION, "simple");
         env.put(Context.SECURITY_PRINCIPAL, userDn);
         env.put(Context.SECURITY_CREDENTIALS, password);
+        env.put(Context.BATCHSIZE, "10000");
         
         ctx = new InitialDirContext(env);
     }
@@ -79,40 +80,57 @@ public class LdapPersistor {
     public <T extends LdapObject> T getByDn(String dn, Class<T> clazz) throws NamingException {
         NamingEnumeration<SearchResult> search = searchDn(dn, SearchControls.OBJECT_SCOPE);
 
-        T newInstance = extractAndInvoke(search, clazz, dn);
+        Collection<T> newInstance = extractAndInvoke(search, clazz, dn);
 
-        return newInstance;
+        if (newInstance.isEmpty()) {
+            return null;
+        } else if (newInstance.size() == 1) {
+            for (T t : newInstance) {
+                return t;
+            }
+        }
+
+        throw new NamingException("No result found!");
     }
 
     private NamingEnumeration<SearchResult> searchDn(String dn, int searchScope) throws NamingException {
         SearchControls sc = new SearchControls();
         sc.setSearchScope(searchScope);
+        sc.setCountLimit(10000L);
         sc.setReturningAttributes(new String[]{"*"});
+        sc.setReturningObjFlag(true);
+
         NamingEnumeration<SearchResult> search = ctx.search(dn, "(objectclass=*)", sc);
+
         return search;
     }
     
-    public <T extends LdapObject> T search(String dn, Class<T> clazz) throws NamingException, SecurityException {
+    public <T extends LdapObject> Collection<T> search(String dn, Class<T> clazz) throws NamingException, SecurityException {
         NamingEnumeration<SearchResult> search = searchDn(dn, SearchControls.SUBTREE_SCOPE);
-        T newInstance = extractAndInvoke(search, clazz, dn);
-
-        return newInstance;
+        Collection<T> convertedObjects = extractAndInvoke(search, clazz, dn);
+        return convertedObjects;
     }
 
-    private <T extends LdapObject> T extractAndInvoke(NamingEnumeration<SearchResult> search, Class<T> clazz, String dn) throws NamingException, SecurityException {
+    private <T extends LdapObject> Collection<T> extractAndInvoke(NamingEnumeration<SearchResult> search, Class<T> clazz, String dn) throws NamingException, SecurityException {
         Collection<String> objectClass = new ArrayList<String>();
-        HashMap<String, Object> extractedAttributes = extractAttributes(search, objectClass);
+        Collection<HashMap<String, Object>> searchResults = extractAttributes(search, objectClass);
         LdapAttributeParser attributeParser = new LdapAttributeParser();
 
-        T newInstance = attributeParser.createNewInstance(extractedAttributes, clazz);
-        newInstance.setDn(dn);
-        newInstance.setObjectClass(objectClass);
-        return newInstance;
+        ArrayList<T> convertedObjects = new ArrayList<T>();
+        for (HashMap<String, Object> extractedAttributes : searchResults) {
+            T newInstance = attributeParser.createNewInstance(extractedAttributes, clazz);
+            newInstance.setDn(dn);
+            newInstance.setObjectClass(objectClass);
+            convertedObjects.add(newInstance);
+        }
+
+        return convertedObjects;
     }
 
-    private HashMap<String, Object> extractAttributes(NamingEnumeration<SearchResult> search, Collection<String> objectClass) throws NamingException {
-        HashMap<String, Object> attributeMap = new HashMap<String, Object>();
+    private Collection<HashMap<String, Object>> extractAttributes(NamingEnumeration<SearchResult> search, Collection<String> objectClass) throws NamingException {
+        ArrayList<HashMap<String, Object>> searchResults = new ArrayList<HashMap<String, Object>>();
         while (search.hasMore()) {
+            HashMap<String, Object> attributeMap = new HashMap<String, Object>();
             SearchResult next = search.next();
             Attributes attributes = next.getAttributes();
             NamingEnumeration<? extends Attribute> all = attributes.getAll();
@@ -140,9 +158,11 @@ public class LdapPersistor {
                 }
                 
                 attributeMap.put(id, value);
+
             }
+            searchResults.add(attributeMap);
         }
-        return attributeMap;
+        return searchResults;
     }
 
     
