@@ -34,7 +34,7 @@ public class BooleanMatchCastAndValidate implements MatchCastAndValidate {
 
     @Override
     public boolean matchesType(Class<?> type) {
-        return Boolean.TYPE.isAssignableFrom(type);
+        return Boolean.TYPE.isAssignableFrom(type) || Boolean.class.isAssignableFrom(type);
     }
 
     @Override
