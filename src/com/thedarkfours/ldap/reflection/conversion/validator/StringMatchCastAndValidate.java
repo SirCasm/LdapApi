@@ -27,7 +27,7 @@ import com.thedarkfours.ldap.reflection.conversion.MatchCastAndValidate;
 
 /**
  *
- * @author rene
+ * @author René Döbele
  */
 public class StringMatchCastAndValidate implements MatchCastAndValidate {
 
