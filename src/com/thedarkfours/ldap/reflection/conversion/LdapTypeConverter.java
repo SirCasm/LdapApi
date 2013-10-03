@@ -24,6 +24,7 @@
 
 package com.thedarkfours.ldap.reflection.conversion;
 
+import com.thedarkfours.ldap.exception.CastAndValidateException;
 import com.thedarkfours.ldap.reflection.conversion.validator.BooleanMatchCastAndValidate;
 import com.thedarkfours.ldap.reflection.conversion.validator.CharacterMatchCastAndValidate;
 import com.thedarkfours.ldap.reflection.conversion.validator.DoubleMatchCastAndValidate;
@@ -35,6 +36,7 @@ import com.thedarkfours.ldap.reflection.conversion.validator.StringMatchCastAndV
 import java.util.ArrayList;
 
 /**
+ * A converter chain to convert generic DataTypes
  *
  * @author René Döbele
  */
@@ -59,6 +61,7 @@ public class LdapTypeConverter {
                 return validator.castAndValidate(object);
             }
         }
-        return null;        //throw new CastAndValidateException("No fitting validator found for type " + type.getName());
+        throw new CastAndValidateException(
+                "No fitting validator found for type " + type.getName());
     }
 }
