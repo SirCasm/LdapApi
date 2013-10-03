@@ -23,16 +23,18 @@
  */
 package com.thedarkfours.ldap.annotation;
 
-import com.thedarkfours.ldap.reflection.LdapAttributeParser;
 import com.thedarkfours.ldap.annotation.testdata.LdapAttributeParserTestObject;
-import com.thedarkfours.ldap.schema.LdapObject;
+import com.thedarkfours.ldap.annotation.testdata.LdapAttributeParserTestObjectPrimitives;
+import com.thedarkfours.ldap.reflection.LdapAttributeParser;
 import java.util.HashMap;
 import org.junit.After;
 import org.junit.AfterClass;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
-import static org.junit.Assert.*;
 
 /**
  *
@@ -52,7 +54,6 @@ public class LdapAttributeParserTest {
         searchResult.put("floatValue", "13423.454");
         searchResult.put("doubleValue", "12345.231");
         searchResult.put("shortValue", "123");
-        searchResult.put("intValue", "1");
     }
     
     @BeforeClass
@@ -85,7 +86,8 @@ public class LdapAttributeParserTest {
     }
     
     @Test
-    public void testSetData() {
+    public void testCreateNewInstanceWrapperClasses() {
+        System.out.println("testCreateNewInstanceWrapperClasses");
         LdapAttributeParser instance = new LdapAttributeParser();
         LdapAttributeParserTestObject result = instance.createNewInstance(searchResult, LdapAttributeParserTestObject.class);
         assertNotNull(result);
@@ -97,6 +99,21 @@ public class LdapAttributeParserTest {
         assertTrue(result.getStringValue().equals("test"));
         assertTrue(result.getDoubleValue().equals(12345.231d));
         assertTrue(result.getFloatValue().equals(13423.454f));
-        assertEquals(1, result.getIntValue());
-    }    
+    }
+
+    @Test
+    public void testCreateNewInstancePrimitives() {
+        System.out.println("testCreateNewInstancePrimitives");
+        LdapAttributeParser instance = new LdapAttributeParser();
+        LdapAttributeParserTestObjectPrimitives result = instance.createNewInstance(searchResult, LdapAttributeParserTestObjectPrimitives.class);
+        assertNotNull(result);
+        assertTrue(result.getBoolValue());
+        assertEquals(result.getLongValue(), 1234L);
+        assertEquals(result.getIntegerValue(), 123);
+        assertEquals(result.getShortValue(), 123);
+        assertEquals(result.getCharValue(), 'a');
+        assertEquals(result.getStringValue(), "test");
+        assertEquals(result.getDoubleValue(), 12345.231d, 0d);
+        assertEquals(result.getFloatValue(), 13423.454f, 0f);
+    }
 }
