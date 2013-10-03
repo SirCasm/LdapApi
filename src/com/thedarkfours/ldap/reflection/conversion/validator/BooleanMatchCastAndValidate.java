@@ -21,23 +21,25 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
+
 package com.thedarkfours.ldap.reflection.conversion.validator;
 
 import com.thedarkfours.ldap.reflection.conversion.MatchCastAndValidate;
 
 /**
  *
- * @author rene
+ * @author René Döbele
  */
-public class StringMatchCastAndValidate implements MatchCastAndValidate {
+public class BooleanMatchCastAndValidate implements MatchCastAndValidate {
 
     @Override
     public boolean matchesType(Class<?> type) {
-        return String.class.isAssignableFrom(type);
+        return Boolean.TYPE.isAssignableFrom(type);
     }
 
     @Override
     public Object castAndValidate(Object object) {
-        return object;
+        return Boolean.valueOf((String)object);
     }
+    
 }
