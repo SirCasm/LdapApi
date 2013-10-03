@@ -40,7 +40,7 @@ import java.util.ArrayList;
  * @author René Döbele
  */
 public class LdapTypeConverter {
-    public ArrayList<MatchCastAndValidate> validators = 
+    private ArrayList<MatchCastAndValidate> validators = 
             new ArrayList<MatchCastAndValidate>();
 
     public LdapTypeConverter() {
