@@ -34,6 +34,7 @@ import com.thedarkfours.ldap.reflection.conversion.validator.ShortMatchCastAndVa
 import com.thedarkfours.ldap.reflection.conversion.validator.FloatMatchCastAndValidate;
 import com.thedarkfours.ldap.reflection.conversion.validator.DoubleMatchCastAndValidate;
 import com.thedarkfours.ldap.exception.CastAndValidateException;
+import com.thedarkfours.ldap.reflection.conversion.validator.BooleanMatchCastAndValidate;
 import java.util.ArrayList;
 
 /**
@@ -47,6 +48,7 @@ public class LdapTypeConverter {
     public LdapTypeConverter() {
         validators.add(new StringMatchCastAndValidate());
         validators.add(new CharacterMatchCastAndValidate());
+        validators.add(new BooleanMatchCastAndValidate());
         validators.add(new ShortMatchCastAndValidate());
         validators.add(new IntegerMatchCastAndValidate());
         validators.add(new LongMatchCastAndValidate());
