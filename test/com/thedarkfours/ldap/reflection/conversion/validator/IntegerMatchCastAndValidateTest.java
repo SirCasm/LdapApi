@@ -28,10 +28,10 @@ package com.thedarkfours.ldap.reflection.conversion.validator;
 
 import org.junit.After;
 import org.junit.AfterClass;
+import static org.junit.Assert.assertEquals;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
-import static org.junit.Assert.*;
 
 /**
  *
@@ -65,6 +65,19 @@ public class IntegerMatchCastAndValidateTest {
     public void testMatchesType() {
         System.out.println("matchesType");
         Class type = Integer.TYPE;
+        IntegerMatchCastAndValidate instance = new IntegerMatchCastAndValidate();
+        boolean expResult = true;
+        boolean result = instance.matchesType(type);
+        assertEquals(expResult, result);
+    }
+
+    /**
+     * Test of matchesType method, of class IntegerMatchCastAndValidate.
+     */
+    @Test
+    public void testMatchesClass() {
+        System.out.println("matchesClass");
+        Class type = Integer.class;
         IntegerMatchCastAndValidate instance = new IntegerMatchCastAndValidate();
         boolean expResult = true;
         boolean result = instance.matchesType(type);
