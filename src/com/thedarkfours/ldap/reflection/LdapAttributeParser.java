@@ -95,11 +95,9 @@ public class LdapAttributeParser {
         Object invocationParameter = null;
         
         try {
-            if (attValue != null && attValue.getClass().isArray()) {
-                System.out.println("Array");
-            } else {
-                invocationParameter = typeConverter.convert(type, attValue);
-            }
+            
+            invocationParameter = typeConverter.convert(type, attValue);
+            
             method.invoke(newInstance, invocationParameter);
         } catch (IllegalAccessException ex) {
             Logger.getLogger(LdapAttributeParser.class.getName()).log(Level.SEVERE, null, ex);
