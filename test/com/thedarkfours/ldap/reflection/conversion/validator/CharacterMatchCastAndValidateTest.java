@@ -26,14 +26,13 @@
 
 package com.thedarkfours.ldap.reflection.conversion.validator;
 
-import com.thedarkfours.ldap.reflection.conversion.validator.CharacterMatchCastAndValidate;
 import com.thedarkfours.ldap.exception.CastAndValidateException;
 import org.junit.After;
 import org.junit.AfterClass;
+import static org.junit.Assert.assertEquals;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
-import static org.junit.Assert.*;
 
 /**
  *
@@ -67,6 +66,19 @@ public class CharacterMatchCastAndValidateTest {
     public void testMatchesType() {
         System.out.println("matchesType");
         Class type = Character.TYPE;
+        CharacterMatchCastAndValidate instance = new CharacterMatchCastAndValidate();
+        boolean expResult = true;
+        boolean result = instance.matchesType(type);
+        assertEquals(expResult, result);
+    }
+
+    /**
+     * Test of matchesType method, of class CharacterMatchCastAndValidate.
+     */
+    @Test
+    public void testMatchesClass() {
+        System.out.println("matchesClass");
+        Class type = Character.class;
         CharacterMatchCastAndValidate instance = new CharacterMatchCastAndValidate();
         boolean expResult = true;
         boolean result = instance.matchesType(type);
