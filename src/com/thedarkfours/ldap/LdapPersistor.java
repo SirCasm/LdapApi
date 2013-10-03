@@ -148,28 +148,33 @@ public class LdapPersistor {
             Object value = null;
 
             if (id.equals("objectClass")) {
-                for (int i = 0; i < attribute.size(); i++) {
-                    objectClass.add((String) attribute.get(i));
-                }
+                addAttributeToStringArray(attribute, objectClass);
                 continue;
             }
 
             if (attribute.size() > 1) {
-                Object[] attArray = new Object[attribute.size()];
-                for (int i = 0; i < attribute.size(); i++) {
-                    attArray[i] = attribute.get(i);
-                }
+                Object[] attArray = toObjectArray(attribute);
                 value = attArray;
             } else {
                 value = attribute.get();
             }
 
             attributeMap.put(id, value);
-
         }
         return attributeMap;
     }
 
-    
-    
+    private void addAttributeToStringArray(Attribute attribute, Collection<String> objectClass) throws NamingException {
+        for (int i = 0; i < attribute.size(); i++) {
+            objectClass.add((String) attribute.get(i));
+        }
+    }
+
+    private Object[] toObjectArray(Attribute attribute) throws NamingException {
+        Object[] attArray = new Object[attribute.size()];
+        for (int i = 0; i < attribute.size(); i++) {
+            attArray[i] = attribute.get(i);
+        }
+        return attArray;
+    }
 }
