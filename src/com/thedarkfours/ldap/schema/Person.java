@@ -17,15 +17,17 @@ public class Person implements LdapObject {
     
     private Collection<String> objectClass;
     private String dn;
+    @LdapAttribute(name = "cn")
+    private String commonName;
     @LdapAttribute(name = "sn")
     private String surname;
-    @LdapAttribute()
+    @LdapAttribute(optional = true)
     private String description;
-    @LdapAttribute()
+    @LdapAttribute(optional = true)
     private String telephoneNumber;
-    @LdapAttribute()
+    @LdapAttribute(optional = true)
     private String seeAlso;
-    @LdapAttribute()
+    @LdapAttribute(optional = true)
     private String userPassword;
 
     @Override
@@ -86,5 +88,13 @@ public class Person implements LdapObject {
 
     public void setUserPassword(String userPassword) {
         this.userPassword = userPassword;
-    }   
+    }
+
+    public String getCommonName() {
+        return commonName;
+    }
+
+    public void setCommonName(String commonName) {
+        this.commonName = commonName;
+    }
 }
