@@ -95,7 +95,6 @@ public class LdapAttributeParser {
         Object invocationParameter = null;
         
         try {
-            
             invocationParameter = typeConverter.convert(type, attValue);
             
             method.invoke(newInstance, invocationParameter);
