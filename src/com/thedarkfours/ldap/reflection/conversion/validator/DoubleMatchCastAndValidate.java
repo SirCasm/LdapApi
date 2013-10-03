@@ -36,7 +36,7 @@ public class DoubleMatchCastAndValidate implements MatchCastAndValidate {
 
     @Override
     public boolean matchesType(Class<?> type) {
-        return Double.TYPE.isAssignableFrom(type);
+        return Double.TYPE.isAssignableFrom(type) || Double.class.isAssignableFrom(type);
     }
 
     @Override
