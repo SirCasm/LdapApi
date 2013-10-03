@@ -113,7 +113,7 @@ public class LdapPersistor {
 
     private <T extends LdapObject> Collection<T> extractAndInvoke(NamingEnumeration<SearchResult> search, Class<T> clazz, String dn) throws NamingException, SecurityException {
         Collection<String> objectClass = new ArrayList<String>();
-        Collection<HashMap<String, Object>> searchResults = extractAttributes(search, objectClass);
+        Collection<HashMap<String, Object>> searchResults = processSearchResults(search, objectClass);
         LdapAttributeParser attributeParser = new LdapAttributeParser();
 
         ArrayList<T> convertedObjects = new ArrayList<T>();
@@ -127,42 +127,47 @@ public class LdapPersistor {
         return convertedObjects;
     }
 
-    private Collection<HashMap<String, Object>> extractAttributes(NamingEnumeration<SearchResult> search, Collection<String> objectClass) throws NamingException {
+    private Collection<HashMap<String, Object>> processSearchResults(NamingEnumeration<SearchResult> search, Collection<String> objectClass) throws NamingException {
         ArrayList<HashMap<String, Object>> searchResults = new ArrayList<HashMap<String, Object>>();
         while (search.hasMore()) {
-            HashMap<String, Object> attributeMap = new HashMap<String, Object>();
-            SearchResult next = search.next();
-            Attributes attributes = next.getAttributes();
-            NamingEnumeration<? extends Attribute> all = attributes.getAll();
-            while (all.hasMore()) {
-                Attribute attribute = all.next();
-                String id = attribute.getID();
-
-                Object value = null;
-                
-                if (id.equals("objectClass")) {
-                    for (int i = 0; i < attribute.size(); i++) {
-                        objectClass.add((String)attribute.get(i));
-                    }
-                    continue;
-                }
-
-                if (attribute.size() > 1) {
-                    Object[] attArray = new Object[attribute.size()];
-                    for (int i = 0; i < attribute.size(); i++) {
-                        attArray[i] = attribute.get(i);
-                    }
-                    value = attArray;
-                } else {
-                    value = attribute.get();
-                }
-                
-                attributeMap.put(id, value);
-
-            }
+            HashMap<String, Object> attributeMap = extractAttributes(search, objectClass);
             searchResults.add(attributeMap);
         }
         return searchResults;
+    }
+
+    private HashMap<String, Object> extractAttributes(NamingEnumeration<SearchResult> search, Collection<String> objectClass) throws NamingException {
+        HashMap<String, Object> attributeMap = new HashMap<String, Object>();
+        SearchResult next = search.next();
+        Attributes attributes = next.getAttributes();
+        NamingEnumeration<? extends Attribute> all = attributes.getAll();
+        while (all.hasMore()) {
+            Attribute attribute = all.next();
+            String id = attribute.getID();
+
+            Object value = null;
+
+            if (id.equals("objectClass")) {
+                for (int i = 0; i < attribute.size(); i++) {
+                    objectClass.add((String) attribute.get(i));
+                }
+                continue;
+            }
+
+            if (attribute.size() > 1) {
+                Object[] attArray = new Object[attribute.size()];
+                for (int i = 0; i < attribute.size(); i++) {
+                    attArray[i] = attribute.get(i);
+                }
+                value = attArray;
+            } else {
+                value = attribute.get();
+            }
+
+            attributeMap.put(id, value);
+
+        }
+        return attributeMap;
     }
 
     
