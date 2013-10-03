@@ -68,7 +68,7 @@ public class StringMatchCastAndValidateTest {
         boolean result = instance.matchesType(type);
         assertEquals(expResult, result);
     }
-
+    
     /**
      * Test of castAndValidate method, of class StringMatchCastAndValidate.
      */
@@ -76,6 +76,19 @@ public class StringMatchCastAndValidateTest {
     public void testCastAndValidate() {
         System.out.println("castAndValidate");
         Object object = "Test";
+        StringMatchCastAndValidate instance = new StringMatchCastAndValidate();
+        Object expResult = "Test";
+        Object result = instance.castAndValidate(object);
+        assertEquals(expResult, result);
+    }
+    
+    /**
+     * Test of castAndValidate method, of class StringMatchCastAndValidate.
+     */
+    @Test
+    public void testCastAndValidateByteArray() {
+        System.out.println("castAndValidateByteArray");
+        Object object = "Test".getBytes();
         StringMatchCastAndValidate instance = new StringMatchCastAndValidate();
         Object expResult = "Test";
         Object result = instance.castAndValidate(object);
