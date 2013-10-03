@@ -41,7 +41,7 @@ public class StringUtils {
         if (string == null) {
             return true;
         }
-        return string.isEmpty();
+        return string.trim().isEmpty();
     }
     /**
      * Capitalizes the first letter of the input String.
