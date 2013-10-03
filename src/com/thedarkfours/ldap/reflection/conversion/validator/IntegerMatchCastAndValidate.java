@@ -36,7 +36,7 @@ public class IntegerMatchCastAndValidate implements MatchCastAndValidate {
 
     @Override
     public boolean matchesType(Class<?> type) {
-        return Integer.TYPE.isAssignableFrom(type);
+        return Integer.TYPE.isAssignableFrom(type) || Integer.class.isAssignableFrom(type);
     }
 
     @Override
