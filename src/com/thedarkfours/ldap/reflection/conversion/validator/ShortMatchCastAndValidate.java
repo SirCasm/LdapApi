@@ -36,7 +36,7 @@ public class ShortMatchCastAndValidate implements MatchCastAndValidate {
 
     @Override
     public boolean matchesType(Class<?> type) {
-        return Short.TYPE.isAssignableFrom(type);
+        return Short.TYPE.isAssignableFrom(type) || Short.class.isAssignableFrom(type);
     }
 
     @Override
