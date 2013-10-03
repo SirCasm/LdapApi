@@ -25,6 +25,7 @@ package com.thedarkfours.ldap.reflection;
 
 import com.thedarkfours.ldap.LdapPersistor;
 import com.thedarkfours.ldap.annotation.LdapAttribute;
+import com.thedarkfours.ldap.reflection.conversion.LdapTypeConverter;
 import com.thedarkfours.ldap.schema.LdapObject;
 import com.thedarkfours.ldap.util.StringUtils;
 import java.lang.annotation.Annotation;
@@ -90,15 +91,16 @@ public class LdapAttributeParser {
     }
 
     private <T extends LdapObject> void CastTypeAndInvokeMethod(Class<?> type, Method method, T newInstance, Object attValue) {
+        LdapTypeConverter typeConverter = new LdapTypeConverter();
+        Object invocationParameter = null;
+        
         try {
             if (attValue != null && attValue.getClass().isArray()) {
                 System.out.println("Array");
-            } else
-            if (Short.TYPE.isAssignableFrom(type)) {
-                method.invoke(newInstance, Short.valueOf((String)attValue));
-            } else if (Boolean.TYPE.isAssignableFrom(type)) {
-                method.invoke(newInstance, Boolean.valueOf((String)attValue));
+            } else {
+                invocationParameter = typeConverter.convert(type, attValue);
             }
+            method.invoke(newInstance, invocationParameter);
         } catch (IllegalAccessException ex) {
             Logger.getLogger(LdapAttributeParser.class.getName()).log(Level.SEVERE, null, ex);
         } catch (IllegalArgumentException ex) {
