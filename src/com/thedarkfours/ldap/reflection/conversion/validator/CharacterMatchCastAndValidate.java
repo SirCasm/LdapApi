@@ -35,7 +35,7 @@ public class CharacterMatchCastAndValidate implements MatchCastAndValidate {
 
     @Override
     public boolean matchesType(Class<?> type) {
-        return Character.TYPE.isAssignableFrom(type);
+        return Character.TYPE.isAssignableFrom(type) || Character.class.isAssignableFrom(type);
     }
 
     @Override
