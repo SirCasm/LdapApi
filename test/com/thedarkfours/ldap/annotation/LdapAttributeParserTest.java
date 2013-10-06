@@ -26,6 +26,7 @@ package com.thedarkfours.ldap.annotation;
 import com.thedarkfours.ldap.annotation.testdata.LdapAttributeParserTestObject;
 import com.thedarkfours.ldap.annotation.testdata.LdapAttributeParserTestObjectPrimitives;
 import com.thedarkfours.ldap.reflection.LdapAttributeParser;
+import java.util.Collection;
 import java.util.HashMap;
 import org.junit.After;
 import org.junit.AfterClass;
@@ -45,7 +46,11 @@ public class LdapAttributeParserTest {
     private HashMap<String, Object> searchResult;
     
     public LdapAttributeParserTest() {
+        String[] ocArray = {"test", "top"};
+
         searchResult = new HashMap<String, Object>();
+        searchResult.put("objectClass", ocArray);
+        searchResult.put("dn", "ou=thedarkfours.com");
         searchResult.put("longValue", "1234");
         searchResult.put("integerValue", "123");
         searchResult.put("boolValue", "true");
@@ -115,5 +120,26 @@ public class LdapAttributeParserTest {
         assertEquals(result.getStringValue(), "test");
         assertEquals(result.getDoubleValue(), 12345.231d, 0d);
         assertEquals(result.getFloatValue(), 13423.454f, 0f);
+    }
+
+    @Test
+    public void isObjectClassSet() {
+        System.out.println("isObjectClassSet");
+        LdapAttributeParser instance = new LdapAttributeParser();
+        LdapAttributeParserTestObjectPrimitives result = instance.createNewInstance(searchResult, LdapAttributeParserTestObjectPrimitives.class);
+        Collection<String> objectClass = result.getObjectClass();
+
+        assertTrue(objectClass.contains("top"));
+        assertTrue(objectClass.contains("test"));
+        assertEquals(2, objectClass.size());
+    }
+
+    @Test
+    public void isDnSet() {
+        System.out.println("isDnSet");
+        LdapAttributeParser instance = new LdapAttributeParser();
+        LdapAttributeParserTestObjectPrimitives result = instance.createNewInstance(searchResult, LdapAttributeParserTestObjectPrimitives.class);
+
+        assertEquals(searchResult.get("dn"), result.getDn());
     }
 }
