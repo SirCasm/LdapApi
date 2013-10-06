@@ -25,7 +25,6 @@
 package com.thedarkfours.ldap.schema;
 
 import com.thedarkfours.ldap.annotation.LdapAttribute;
-import java.util.Collection;
 
 /**
  *
@@ -33,8 +32,6 @@ import java.util.Collection;
  */
 public class Person extends BasicLdapObject {
     
-    private Collection<String> objectClass;
-    private String dn;
     @LdapAttribute(name = "cn")
     private String commonName;
     @LdapAttribute(name = "sn")
@@ -47,26 +44,6 @@ public class Person extends BasicLdapObject {
     private String seeAlso;
     @LdapAttribute(optional = true)
     private String userPassword;
-
-    @Override
-    public Collection<String> getObjectClass() {
-        return objectClass;
-    }
-
-    @Override
-    public void setObjectClass(Collection<String> objectClass) {
-        this.objectClass = objectClass;
-    }
-
-    @Override
-    public String getDn() {
-        return dn;
-    }
-
-    @Override
-    public void setDn(String dn) {
-        this.dn = dn;
-    }
 
     public String getSurname() {
         return surname;

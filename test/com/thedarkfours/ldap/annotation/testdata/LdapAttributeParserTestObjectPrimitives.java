@@ -25,14 +25,13 @@
 package com.thedarkfours.ldap.annotation.testdata;
 
 import com.thedarkfours.ldap.annotation.LdapAttribute;
-import com.thedarkfours.ldap.schema.LdapObject;
-import java.util.Collection;
+import com.thedarkfours.ldap.schema.BasicLdapObject;
 
 /**
  *
  * @author rene
  */
-public class LdapAttributeParserTestObjectPrimitives implements LdapObject {
+public class LdapAttributeParserTestObjectPrimitives extends BasicLdapObject {
 
     @LdapAttribute
     long longValue;
@@ -50,26 +49,6 @@ public class LdapAttributeParserTestObjectPrimitives implements LdapObject {
     double doubleValue;
     @LdapAttribute
     short shortValue;
-
-    @Override
-    public String getDn() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
-
-    @Override
-    public Collection<String> getObjectClass() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
-
-    @Override
-    public void setDn(String dn) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
-
-    @Override
-    public void setObjectClass(Collection<String> objectClass) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
 
     public long getLongValue() {
         return longValue;
