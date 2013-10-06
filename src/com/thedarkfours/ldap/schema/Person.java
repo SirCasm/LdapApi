@@ -31,7 +31,7 @@ import java.util.Collection;
  *
  * @author rene
  */
-public class Person implements LdapObject {
+public class Person extends BasicLdapObject {
     
     private Collection<String> objectClass;
     private String dn;

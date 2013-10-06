@@ -1,7 +1,7 @@
 /*
  * The MIT License
  *
- * Copyright 2013 René Döbele.
+ * Copyright 2013 rene.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -24,40 +24,34 @@
 
 package com.thedarkfours.ldap.schema;
 
+import com.thedarkfours.ldap.annotation.LdapAttribute;
 import java.util.Collection;
 
 /**
  *
  * @author rene
  */
-public interface LdapObject {
+public class BasicLdapObject implements LdapObject {
 
-    /**
-     * Get the distinguished name for the LdapObject
-     *
-     * @return a string containing the name of the ldap object.
-     */
-    String getDn();
+    @LdapAttribute
+    private String dn;
+    @LdapAttribute
+    private Collection<String> objectClass;
 
-    /**
-     * Get the object class of the Ldap object
-     *
-     * @return a collection of strings containing the object classes
-     */
-    Collection<String> getObjectClass();
+    public String getDn() {
+        return dn;
+    }
 
-    /**
-     * Set the distinguished name for the LdapObject.
-     *
-     * @param dn
-     */
-    void setDn(String dn);
+    public void setDn(String dn) {
+        this.dn = dn;
+    }
 
-    /**
-     * Set the distinguished name
-     *
-     * @param objectClass an array of strings representing the object classes
-     */
-    void setObjectClass(Collection<String> objectClass);
-    
+    public Collection<String> getObjectClass() {
+        return objectClass;
+    }
+
+    public void setObjectClass(Collection<String> objectClass) {
+        this.objectClass = objectClass;
+    }
+
 }
