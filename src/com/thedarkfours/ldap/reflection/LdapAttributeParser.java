@@ -32,7 +32,9 @@ import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.util.Arrays;
 import java.util.HashMap;
+import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -55,6 +57,12 @@ public class LdapAttributeParser {
         T newInstance = null;
         try {
             newInstance = clazz.newInstance();
+            newInstance.setDn((String) searchResult.get("dn"));
+            Object[] classArray = (Object[]) searchResult.get("objectClass");
+
+            List<String> objectClass = Arrays.asList(Arrays.copyOf(classArray, classArray.length, String[].class));
+            newInstance.setObjectClass(objectClass);
+
         } catch (InstantiationException ex) {
             Logger.getLogger(LdapPersistor.class.getName()).log(Level.SEVERE, null, ex);
         } catch (IllegalAccessException ex) {
@@ -62,12 +70,12 @@ public class LdapAttributeParser {
         }
         Field[] fields = newInstance.getClass().getDeclaredFields();
         for (Field field : fields) {
-            invokeMethod(field, newInstance, searchResult);
+            setFields(field, newInstance, searchResult);
         }
         return newInstance;
     }
 
-    private <T extends LdapObject> void invokeMethod(Field field, T newInstance, HashMap<String, Object> searchResult) throws RuntimeException {
+    private <T extends LdapObject> void setFields(Field field, T newInstance, HashMap<String, Object> searchResult) throws RuntimeException {
         LdapAttribute annotation = field.getAnnotation(LdapAttribute.class);
         if (annotation != null) {
             String name = field.getName();
@@ -80,17 +88,16 @@ public class LdapAttributeParser {
             final Class<?> type = field.getType();
             try {
                 method = newInstance.getClass().getMethod(setterName, type);
-                System.out.println("");
             } catch (NoSuchMethodException ex) {
                 Logger.getLogger(LdapPersistor.class.getName()).log(Level.SEVERE, null, ex);
                 throw new RuntimeException("There is no method: " + setterName);
             }
             Object attValue = searchResult.get(ldapName);
-            CastTypeAndInvokeMethod(type, method, newInstance, attValue);
+            CastTypeAndInvokeSetter(type, method, newInstance, attValue);
         }
     }
 
-    private <T extends LdapObject> void CastTypeAndInvokeMethod(Class<?> type, Method method, T newInstance, Object attValue) {
+    private <T extends LdapObject> void CastTypeAndInvokeSetter(Class<?> type, Method method, T newInstance, Object attValue) {
         LdapTypeConverter typeConverter = new LdapTypeConverter();
         Object invocationParameter = null;
         
