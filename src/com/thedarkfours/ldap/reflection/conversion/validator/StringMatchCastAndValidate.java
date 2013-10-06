@@ -38,7 +38,10 @@ public class StringMatchCastAndValidate implements MatchCastAndValidate {
 
     @Override
     public Object castAndValidate(Object object) {
-        if (object != null && object.getClass().isArray()) {
+
+        if (object instanceof String[]) {
+            String[] StringArray = (String[]) object;
+        } else if (object != null && object.getClass().isArray()) {
             return new String((byte[])object);
         }
         return object;
