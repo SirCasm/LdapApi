@@ -30,12 +30,11 @@ import java.util.Collection;
 import java.util.HashMap;
 import org.junit.After;
 import org.junit.AfterClass;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
+import org.junit.Ignore;
+import static org.junit.Assert.*;
 
 /**
  *
