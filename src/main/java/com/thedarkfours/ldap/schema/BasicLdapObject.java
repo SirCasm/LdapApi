@@ -38,18 +38,22 @@ public class BasicLdapObject implements LdapObject {
     @LdapAttribute
     private Collection<String> objectClass;
 
+    @Override
     public final String getDn() {
         return dn;
     }
 
+    @Override
     public final void setDn(String dn) {
         this.dn = dn;
     }
 
+    @Override
     public final Collection<String> getObjectClass() {
         return objectClass;
     }
 
+    @Override
     public final void setObjectClass(Collection<String> objectClass) {
         this.objectClass = objectClass;
     }
