@@ -114,7 +114,7 @@ public class LdapAttributeParserTest {
         assertTrue(result.getBoolValue());
         assertEquals(result.getLongValue(), 1234L);
         assertEquals(result.getIntegerValue(), 123);
-        assertEquals(result.getShortValue(), 123);
+        assertEquals(result.getShortValue(), (short) 123);
         assertEquals(result.getCharValue(), 'a');
         assertEquals(result.getStringValue(), "test");
         assertEquals(result.getDoubleValue(), 12345.231d, 0d);
