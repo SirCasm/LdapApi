@@ -92,4 +92,9 @@ public class Person extends BasicLdapObject {
     public void setCommonName(String commonName) {
         this.commonName = commonName;
     }
+
+    @Override
+    public String toString() {
+        return "Person{" + "commonName=" + commonName + ", surname=" + surname + ", description=" + description + ", telephoneNumber=" + telephoneNumber + ", seeAlso=" + seeAlso + ", userPassword=" + userPassword + '}';
+    }
 }
