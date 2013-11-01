@@ -44,14 +44,6 @@ import java.util.logging.Logger;
  */
 public class LdapAttributeParser {
 
-    public void parse(Class<? extends LdapObject> clazz) {
-        Field[] fields = clazz.getFields();
-
-        for (Field field : fields) {
-            Annotation[] declaredAnnotations = field.getDeclaredAnnotations();
-        }
-    }
-
     public <T extends LdapObject> T createNewInstance(HashMap<String, Object> searchResult, Class<T> clazz) throws SecurityException {
 
         T newInstance = null;
