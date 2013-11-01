@@ -25,6 +25,7 @@
 package com.thedarkfours.ldap;
 
 import com.thedarkfours.ldap.reflection.LdapAttributeParser;
+import com.thedarkfours.ldap.reflection.SearchResultProcessor;
 import com.thedarkfours.ldap.schema.LdapObject;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -46,11 +47,9 @@ import javax.naming.ldap.LdapName;
  * @author rene
  */
 public class LdapPersistor {
-    private final String connectString;
-    private final LdapName baseDn;
-    private final String userDn;
-    private final String password;
     private InitialDirContext ctx;
+    private final LdapCredentials ldapCredentials;
+    private SearchResultProcessor searchResultProcessor;
 
     /**
      *
@@ -61,28 +60,24 @@ public class LdapPersistor {
      * @throws NamingException
      */
     public LdapPersistor(String connectString, String baseDn, String userDn, String password) throws InvalidNameException {
-        this.connectString = connectString;
-        this.baseDn = new LdapName(baseDn);
-        this.userDn = userDn;
-        this.password = password;
+        ldapCredentials = new LdapCredentials(connectString, new LdapName(baseDn), userDn, password);
+        searchResultProcessor = new SearchResultProcessor();
     }
     
     public void connect() throws NamingException {
         Hashtable<String, Object> env = new Hashtable<String, Object>();
         env.put(Context.INITIAL_CONTEXT_FACTORY, "com.sun.jndi.ldap.LdapCtxFactory");
-        env.put(Context.PROVIDER_URL, connectString + "/" + baseDn.toString());
+        env.put(Context.PROVIDER_URL, ldapCredentials.getConnectString() + "/" + ldapCredentials.getBaseDn());
         env.put(Context.SECURITY_AUTHENTICATION, "simple");
-        env.put(Context.SECURITY_PRINCIPAL, userDn);
-        env.put(Context.SECURITY_CREDENTIALS, password);
+        env.put(Context.SECURITY_PRINCIPAL, ldapCredentials.getUserDn());
+        env.put(Context.SECURITY_CREDENTIALS, ldapCredentials.getPassword());
 //        env.put(Context.BATCHSIZE, "10000");
-        
         ctx = new InitialDirContext(env);
     }
     
     public <T extends LdapObject> T getByDn(String dn, Class<T> clazz) throws NamingException {
         NamingEnumeration<SearchResult> search = searchDn(dn, SearchControls.OBJECT_SCOPE);
-
-        Collection<T> newInstance = extractAndInvoke(search, clazz, dn);
+        Collection<T> newInstance = searchResultProcessor.extractAndInvoke(search, clazz, ldapCredentials);
 
         if (newInstance.isEmpty()) {
             return null;
@@ -106,80 +101,7 @@ public class LdapPersistor {
     
     public <T extends LdapObject> Collection<T> search(String dn, Class<T> clazz) throws NamingException, SecurityException {
         NamingEnumeration<SearchResult> search = searchDn(dn, SearchControls.SUBTREE_SCOPE);
-        Collection<T> convertedObjects = extractAndInvoke(search, clazz, dn);
+        Collection<T> convertedObjects = searchResultProcessor.extractAndInvoke(search, clazz, ldapCredentials);
         return convertedObjects;
-    }
-
-    private <T extends LdapObject> Collection<T> extractAndInvoke(NamingEnumeration<SearchResult> search, Class<T> clazz, String dn) throws NamingException, SecurityException {
-        Collection<String> objectClass = new ArrayList<String>();
-        Collection<HashMap<String, Object>> searchResults = processSearchResults(search, objectClass);
-        LdapAttributeParser attributeParser = new LdapAttributeParser();
-
-        ArrayList<T> convertedObjects = new ArrayList<T>();
-        for (HashMap<String, Object> extractedAttributes : searchResults) {
-            T newInstance = attributeParser.createNewInstance(extractedAttributes, clazz);
-            convertedObjects.add(newInstance);
-        }
-
-        return convertedObjects;
-    }
-
-    private Collection<HashMap<String, Object>> processSearchResults(NamingEnumeration<SearchResult> search, Collection<String> objectClass) throws NamingException {
-        ArrayList<HashMap<String, Object>> searchResults = new ArrayList<HashMap<String, Object>>();
-        while (search.hasMore()) {
-            HashMap<String, Object> attributeMap = extractAttributes(search, objectClass);
-            searchResults.add(attributeMap);
-        }
-        return searchResults;
-    }
-
-    private HashMap<String, Object> extractAttributes(NamingEnumeration<SearchResult> search, Collection<String> objectClass) throws NamingException {
-        HashMap<String, Object> attributeMap = new HashMap<String, Object>();
-
-        SearchResult searchResult = search.next();
-        LdapName name = new LdapName(searchResult.getNameInNamespace());
-        if (name.startsWith(baseDn)) {
-            removeBaseDn(name);
-        }
-        attributeMap.put("dn", name.toString());
-
-        Attributes attributes = searchResult.getAttributes();
-        NamingEnumeration<? extends Attribute> all = attributes.getAll();
-        while (all.hasMore()) {
-            Attribute attribute = all.next();
-            String id = attribute.getID();
-
-            Object value = null;
-
-            if (attribute.size() > 1) {
-                Object[] attArray = toObjectArray(attribute);
-                value = attArray;
-            } else {
-                value = attribute.get();
-            }
-
-            attributeMap.put(id, value);
-        }
-        return attributeMap;
-    }
-
-    private void removeBaseDn(LdapName name) throws InvalidNameException {
-        for (int i = 0; i < baseDn.size(); i++) {
-            name.remove(i);
-        }
-    }
-
-    private void addAttributeToStringArray(Attribute attribute, Collection<String> objectClass) throws NamingException {
-        for (int i = 0; i < attribute.size(); i++) {
-            objectClass.add((String) attribute.get(i));
-        }
-    }
-
-    private Object[] toObjectArray(Attribute attribute) throws NamingException {
-        Object[] attArray = new Object[attribute.size()];
-        for (int i = 0; i < attribute.size(); i++) {
-            attArray[i] = attribute.get(i);
-        }
-        return attArray;
     }
 }
