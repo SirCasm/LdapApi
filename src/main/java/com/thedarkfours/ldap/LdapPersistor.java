@@ -49,7 +49,7 @@ import javax.naming.ldap.LdapName;
  */
 public class LdapPersistor {
     private InitialDirContext ctx;
-    private final LdapCredentials ldapCredentials;
+    private final LdapBindInformation ldapCredentials;
     private final SearchResultProcessor searchResultProcessor;
 
     /**
@@ -61,10 +61,10 @@ public class LdapPersistor {
      * @throws NamingException
      */
     public LdapPersistor(String connectString, String baseDn, String userDn, String password) throws InvalidNameException {
-        this(new LdapCredentials(connectString, new LdapName(baseDn), userDn, password));
+        this(new LdapBindInformation(connectString, new LdapName(baseDn), userDn, password));
     }
 
-    public LdapPersistor(LdapCredentials ldapCredentials) {
+    public LdapPersistor(LdapBindInformation ldapCredentials) {
         this.ldapCredentials = ldapCredentials;
         searchResultProcessor = new SearchResultProcessor();
     }

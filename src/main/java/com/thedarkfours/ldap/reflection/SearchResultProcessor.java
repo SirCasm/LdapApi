@@ -6,7 +6,7 @@
 
 package com.thedarkfours.ldap.reflection;
 
-import com.thedarkfours.ldap.LdapCredentials;
+import com.thedarkfours.ldap.LdapBindInformation;
 import com.thedarkfours.ldap.LdapPersistor;
 import com.thedarkfours.ldap.schema.LdapObject;
 import java.util.ArrayList;
@@ -25,7 +25,7 @@ import javax.naming.ldap.LdapName;
  */
 public class SearchResultProcessor {
 
-    private HashMap extractAttributes(NamingEnumeration<SearchResult> search, Collection<String> objectClass, LdapCredentials ldapInfo) throws NamingException {
+    private HashMap extractAttributes(NamingEnumeration<SearchResult> search, Collection<String> objectClass, LdapBindInformation ldapInfo) throws NamingException {
         HashMap<String, Object> attributeMap = new HashMap<String, Object>();
         SearchResult searchResult = search.next();
         LdapName name = new LdapName(searchResult.getNameInNamespace());
@@ -54,7 +54,7 @@ public class SearchResultProcessor {
         }
     }
 
-    private Collection processSearchResults(NamingEnumeration<SearchResult> search, Collection<String> objectClass, LdapCredentials ldapInfo) throws NamingException {
+    private Collection processSearchResults(NamingEnumeration<SearchResult> search, Collection<String> objectClass, LdapBindInformation ldapInfo) throws NamingException {
         ArrayList<HashMap<String, Object>> searchResults = new ArrayList<HashMap<String, Object>>();
         while (search.hasMore()) {
             HashMap<String, Object> attributeMap = extractAttributes(search, objectClass, ldapInfo);
@@ -71,7 +71,7 @@ public class SearchResultProcessor {
         return attArray;
     }
 
-    public <T extends LdapObject> Collection extractAndInvoke(NamingEnumeration<SearchResult> search, Class<T> clazz, LdapCredentials ldapInfo) throws NamingException, SecurityException {
+    public <T extends LdapObject> Collection extractAndInvoke(NamingEnumeration<SearchResult> search, Class<T> clazz, LdapBindInformation ldapInfo) throws NamingException, SecurityException {
         Collection<String> objectClass = new ArrayList<String>();
         Collection<HashMap<String, Object>> searchResults = processSearchResults(search, objectClass, ldapInfo);
         LdapAttributeParser attributeParser = new LdapAttributeParser();
@@ -82,5 +82,4 @@ public class SearchResultProcessor {
         }
         return convertedObjects;
     }
-
 }
