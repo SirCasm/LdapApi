@@ -27,6 +27,7 @@ package com.thedarkfours.ldap;
 import com.thedarkfours.ldap.reflection.LdapAttributeParser;
 import com.thedarkfours.ldap.reflection.SearchResultProcessor;
 import com.thedarkfours.ldap.schema.LdapObject;
+import com.thedarkfours.ldap.schema.Person;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -49,7 +50,7 @@ import javax.naming.ldap.LdapName;
 public class LdapPersistor {
     private InitialDirContext ctx;
     private final LdapCredentials ldapCredentials;
-    private SearchResultProcessor searchResultProcessor;
+    private final SearchResultProcessor searchResultProcessor;
 
     /**
      *
@@ -60,7 +61,11 @@ public class LdapPersistor {
      * @throws NamingException
      */
     public LdapPersistor(String connectString, String baseDn, String userDn, String password) throws InvalidNameException {
-        ldapCredentials = new LdapCredentials(connectString, new LdapName(baseDn), userDn, password);
+        this(new LdapCredentials(connectString, new LdapName(baseDn), userDn, password));
+    }
+
+    public LdapPersistor(LdapCredentials ldapCredentials) {
+        this.ldapCredentials = ldapCredentials;
         searchResultProcessor = new SearchResultProcessor();
     }
     
@@ -103,5 +108,13 @@ public class LdapPersistor {
         NamingEnumeration<SearchResult> search = searchDn(dn, SearchControls.SUBTREE_SCOPE);
         Collection<T> convertedObjects = searchResultProcessor.extractAndInvoke(search, clazz, ldapCredentials);
         return convertedObjects;
+    }
+
+    public <T extends LdapObject> void put(String rdn, T ldapEntry) throws InvalidNameException {
+        LdapName ldapName = new LdapName(rdn);
+    }
+
+    public void disconnect() throws NamingException {
+        ctx.close();
     }
 }
